@@ -1,23 +1,18 @@
 package main
 
 import "versionsio/api/pkg/service"
-import "github.com/lib/pq"
 import "github.com/segmentio/go-log"
-import "github.com/segmentio/go-env"
-import "database/sql"
+import elastigo "github.com/mattbaird/elastigo/lib"
 
 var Version = "0.0.1"
 
 func main() {
-	db, err := sql.Open("postgres", env.MustGet("VERSIONSIO_POSTGRES_URI"))
-	log.Check(err)
-
 	o := &service.Options{
-		Db: db,
+		Db: elastigo.NewConn(),
 	}
 
-	s := Service.New(o)
+	s := service.New(o)
 	s.Init()
-	err = s.Listen()
+	err := s.Listen("localhost:7000")
 	log.Check(err)
 }
