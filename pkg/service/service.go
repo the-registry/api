@@ -1,5 +1,6 @@
 package service
 
+import "versionsio/api/routes"
 import "github.com/gohttp/app"
 import "database/sql/driver"
 import "net/http"
@@ -20,10 +21,10 @@ func New(o *Options) *Service {
 	}
 }
 
-func (s *Service) All(res http.ResponseWriter, req *http.Request) {
-
-}
-
 func (s *Service) Init() {
-	s.Get("/", http.HandlerFunc(s.All))
+	s.Get("/", http.HandlerFunc(routes.HomeHandler))
+	s.Get("/:namespace", http.HandlerFunc(routes.IndexHandler))
+	s.Get("/:namespace/search", http.HandlerFunc(routes.SearchHandler))
+	// register
+	s.Post("/:namespace", http.HandlerFunc(routes.IndexHandler))
 }
