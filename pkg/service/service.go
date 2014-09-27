@@ -2,6 +2,7 @@ package service
 
 import "github.com/gohttp/app"
 import "github.com/gohttp/response"
+import "github.com/gohttp/logger"
 import elastigo "github.com/mattbaird/elastigo/lib"
 import "net/http"
 import "log"
@@ -29,7 +30,6 @@ func New(o *Options) *Service {
 }
 
 func (s *Service) HomeHandler(res http.ResponseWriter, req *http.Request) {
-
 }
 
 func (s *Service) IndexHandler(res http.ResponseWriter, req *http.Request) {
@@ -52,9 +52,11 @@ func (s *Service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		Url:  req.URL.Query().Get("url"),
 		Type: t,
 	})
+	res.WriteHeader(http.StatusCreated)
 }
 
 func (s *Service) Init() {
+	s.Use(logger.New())
 	s.Get("/", http.HandlerFunc(s.HomeHandler))
 	s.Get("/:type/packages", http.HandlerFunc(s.IndexHandler))
 	s.Get("/:type/packages/search", http.HandlerFunc(s.SearchHandler))

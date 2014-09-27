@@ -13,6 +13,6 @@ func main() {
 
 	s := service.New(o)
 	s.Init()
-	err := s.Listen("localhost:7000")
+	err := s.Listen("localhost:3000")
 	log.Check(err)
 }
