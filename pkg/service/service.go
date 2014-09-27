@@ -6,6 +6,8 @@ import "github.com/gohttp/logger"
 import elastigo "github.com/mattbaird/elastigo/lib"
 import "net/http"
 import "log"
+import "encoding/json"
+import u "versionsio/api/pkg/utils"
 
 type Package struct {
 	Url  string `json:"url"`
@@ -47,11 +49,21 @@ func (s *Service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 func (s *Service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	t := req.URL.Query().Get(":type")
+	var j map[string]string
+	d := json.NewDecoder(req.Body)
+	err := d.Decode(&j)
+
+	if err != nil {
+		u.Error(res, err)
+		return
+	}
+
 	s.Db.Index("versions", "Packages", "", nil, Package{
-		Name: req.URL.Query().Get("name"),
-		Url:  req.URL.Query().Get("url"),
+		Name: j["name"],
+		Url:  j["url"],
 		Type: t,
 	})
+
 	res.WriteHeader(http.StatusCreated)
 }
 
