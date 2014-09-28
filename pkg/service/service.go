@@ -4,7 +4,6 @@ import "github.com/gohttp/app"
 import "github.com/gohttp/response"
 import "github.com/gohttp/logger"
 import elastigo "github.com/mattbaird/elastigo/lib"
-import "log"
 import "net/http"
 import u "versionsio/api/pkg/utils"
 
@@ -34,28 +33,64 @@ func (s *Service) HomeHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *Service) IndexHandler(res http.ResponseWriter, req *http.Request) {
-	// t := req.URL.Query().Get(":type")
-	// response.JSON(res, pkgs)
+	p := params(res, req)
+
+	a := []map[string]interface{}{}
+
+	a = append(a, map[string]interface{}{
+		"match": map[string]string{
+			"name": p["type"],
+		},
+	})
+
+	search, err := s.Db.Search("registry", "packages", nil, map[string]interface{}{
+		"query": map[string]interface{}{
+			"bool": map[string]interface{}{
+				"must": a,
+			},
+		},
+	})
+
+	if err != nil {
+		u.Error(res, err)
+		return
+	}
+
+	j := []interface{}{}
+
+	for _, h := range search.Hits.Hits {
+		j = append(j, h.Source)
+	}
+
+	response.JSON(res, j)
 }
 
 func (s *Service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	p := params(res, req)
 
+	if p["name"] == "" {
+		s.IndexHandler(res, req)
+		return
+	}
+
+	a := []map[string]interface{}{}
+
+	a = append(a, map[string]interface{}{
+		"match": map[string]string{
+			"name": p["name"],
+		},
+	})
+
+	a = append(a, map[string]interface{}{
+		"match": map[string]string{
+			"name": p["type"],
+		},
+	})
+
 	search, err := s.Db.Search("registry", "packages", nil, map[string]interface{}{
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{
-				"must": []map[string]interface{}{
-					map[string]interface{}{
-						"match": map[string]string{
-							"name": p["name"],
-						},
-					},
-					map[string]interface{}{
-						"match": map[string]string{
-							"name": p["type"],
-						},
-					},
-				},
+				"must": a,
 			},
 		},
 	})
@@ -89,8 +124,6 @@ func (s *Service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 func (s *Service) ShowHandler(res http.ResponseWriter, req *http.Request) {
 	p := params(res, req)
 
-	log.Printf("%s", p)
-
 	search, err := s.Db.Search("registry", "packages", nil, map[string]interface{}{
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{
@@ -114,8 +147,6 @@ func (s *Service) ShowHandler(res http.ResponseWriter, req *http.Request) {
 		u.Error(res, err)
 		return
 	}
-
-	log.Printf("%s", search)
 
 	if len(search.Hits.Hits) > 0 {
 		response.JSON(res, search.Hits.Hits[0].Source)
