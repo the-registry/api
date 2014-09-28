@@ -6,8 +6,6 @@ import "github.com/gohttp/logger"
 import elastigo "github.com/mattbaird/elastigo/lib"
 import "log"
 import "net/http"
-
-// import "encoding/json"
 import u "versionsio/api/pkg/utils"
 
 type Package struct {
@@ -43,24 +41,18 @@ func (s *Service) IndexHandler(res http.ResponseWriter, req *http.Request) {
 func (s *Service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	p := params(res, req)
 
-	//TODO: clean this up with query dsl
-	search, err := s.Db.Search("versions", "packages", nil, map[string]interface{}{
+	search, err := s.Db.Search("registry", "packages", nil, map[string]interface{}{
 		"query": map[string]interface{}{
-			"filtered": map[string]interface{}{
-				"query": map[string]interface{}{
-					"match_all": map[string]string{},
-				},
-				"filter": map[string]interface{}{
-					"and": []map[string]interface{}{
-						{
-							"term": map[string]string{
-								"name": p["name"],
-							},
+			"bool": map[string]interface{}{
+				"must": []map[string]interface{}{
+					map[string]interface{}{
+						"match": map[string]string{
+							"name": p["name"],
 						},
-						{
-							"term": map[string]string{
-								"type": p["type"],
-							},
+					},
+					map[string]interface{}{
+						"match": map[string]string{
+							"name": p["type"],
 						},
 					},
 				},
@@ -85,7 +77,7 @@ func (s *Service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 func (s *Service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	p := params(res, req)
 
-	s.Db.Index("versions", "packages", "", nil, Package{
+	s.Db.Index("registry", "packages", "", nil, Package{
 		Name: p["name"],
 		Url:  p["url"],
 		Type: p["type"],
@@ -95,12 +87,52 @@ func (s *Service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *Service) ShowHandler(res http.ResponseWriter, req *http.Request) {
+	p := params(res, req)
+
+	log.Printf("%s", p)
+
+	search, err := s.Db.Search("registry", "packages", nil, map[string]interface{}{
+		"query": map[string]interface{}{
+			"bool": map[string]interface{}{
+				"must": []map[string]interface{}{
+					map[string]interface{}{
+						"match": map[string]string{
+							"name.untouched": p["name"],
+						},
+					},
+					map[string]interface{}{
+						"match": map[string]string{
+							"name": p["type"],
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if err != nil {
+		u.Error(res, err)
+		return
+	}
+
+	log.Printf("%s", search)
+
+	if len(search.Hits.Hits) > 0 {
+		response.JSON(res, search.Hits.Hits[0].Source)
+		return
+	} else {
+		res.WriteHeader(http.StatusNotFound)
+	}
 }
 
 func params(res http.ResponseWriter, req *http.Request) map[string]string {
+	name := req.URL.Query().Get("name")
+	if name == "" {
+		name = req.URL.Query().Get(":name")
+	}
 	return map[string]string{
 		"type": req.URL.Query().Get(":type"),
-		"name": req.URL.Query().Get("name"),
+		"name": name,
 	}
 }
 
