@@ -124,36 +124,62 @@ func (s *Service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 func (s *Service) ShowHandler(res http.ResponseWriter, req *http.Request) {
 	p := params(res, req)
 
-	search, err := s.Db.Search("registry", "packages", nil, map[string]interface{}{
-		"query": map[string]interface{}{
-			"bool": map[string]interface{}{
-				"must": []map[string]interface{}{
-					map[string]interface{}{
-						"match": map[string]string{
-							"name.untouched": p["name"],
-						},
-					},
-					map[string]interface{}{
-						"match": map[string]string{
-							"name": p["type"],
-						},
-					},
-				},
-			},
-		},
-	})
+	result, err := s.search(p["name"], p["type"])
 
 	if err != nil {
 		u.Error(res, err)
 		return
 	}
 
-	if len(search.Hits.Hits) > 0 {
-		response.JSON(res, search.Hits.Hits[0].Source)
+	if len(result.Hits.Hits) > 0 {
+		response.JSON(res, result.Hits.Hits[0].Source)
 		return
 	} else {
 		res.WriteHeader(http.StatusNotFound)
 	}
+}
+
+func (s *Service) search(name string, t string) (elastigo.SearchResult, error) {
+	return s.Db.Search("registry", "packages", nil, map[string]interface{}{
+		"query": map[string]interface{}{
+			"bool": map[string]interface{}{
+				"must": []map[string]interface{}{
+					map[string]interface{}{
+						"match": map[string]string{
+							"name.untouched": name,
+						},
+					},
+					map[string]interface{}{
+						"match": map[string]string{
+							"name": t,
+						},
+					},
+				},
+			},
+		},
+	})
+}
+
+func (s *Service) DeleteHandler(res http.ResponseWriter, req *http.Request) {
+	p := params(res, req)
+
+	result, err := s.search(p["name"], p["type"])
+
+	if err != nil {
+		u.Error(res, err)
+		return
+	}
+
+	for _, h := range result.Hits.Hits {
+		_, err := s.Db.Delete("registry", "packages", h.Id, nil)
+
+		if err != nil {
+			u.Error(res, err)
+			return
+		}
+	}
+
+	res.WriteHeader(http.StatusNoContent)
 }
 
 func params(res http.ResponseWriter, req *http.Request) map[string]string {
@@ -173,5 +199,6 @@ func (s *Service) Init() {
 	s.Get("/types/:type/packages", http.HandlerFunc(s.IndexHandler))
 	s.Get("/types/:type/packages/search", http.HandlerFunc(s.SearchHandler))
 	s.Get("/types/:type/packages/:name", http.HandlerFunc(s.ShowHandler))
+	s.Del("/types/:type/packages/:name", http.HandlerFunc(s.DeleteHandler))
 	s.Post("/types/:type/packages", http.HandlerFunc(s.CreateHandler))
 }
