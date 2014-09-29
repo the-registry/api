@@ -1,6 +1,6 @@
 package main
 
-import "versionsio/api/pkg/service"
+import "github.com/the-registry/api/pkg/service"
 import "github.com/segmentio/go-log"
 import elastigo "github.com/mattbaird/elastigo/lib"
 
