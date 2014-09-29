@@ -1,0 +1,48 @@
+{
+	"ImportPath": "versionsio/api",
+	"GoVersion": "go1.3.1",
+	"Deps": [
+		{
+			"ImportPath": "github.com/araddon/gou",
+			"Rev": "5270e27dc51dad48e1a1d1f5a7806e2fa8d2eb88"
+		},
+		{
+			"ImportPath": "github.com/bitly/go-hostpool",
+			"Rev": "2e89d10a8bbfeada4b32882ffb4a2cb8b31d9bc0"
+		},
+		{
+			"ImportPath": "github.com/bmizerany/pat",
+			"Rev": "b8a35001b773c267eb260a691f4e5499a3531600"
+		},
+		{
+			"ImportPath": "github.com/dustin/go-humanize",
+			"Rev": "2741ef0c092bc5a4642be9b86c4b7dac138c7c53"
+		},
+		{
+			"ImportPath": "github.com/gohttp/app",
+			"Rev": "c45a2c3b1162ce9932e7b5e6cf4e9e918888c965"
+		},
+		{
+			"ImportPath": "github.com/gohttp/logger",
+			"Rev": "8fcbf8129cfef44c930cc3aedffccbd13a68dcc9"
+		},
+		{
+			"ImportPath": "github.com/gohttp/response",
+			"Rev": "3052f6567939760e499f019b48955240aff2ac5e"
+		},
+		{
+			"ImportPath": "github.com/justinas/alice",
+			"Rev": "35b479054b26b5ba66f85862c85ca90e098c04fe"
+		},
+		{
+			"ImportPath": "github.com/mattbaird/elastigo/lib",
+			"Comment": "v1.0-72-g4b32a03",
+			"Rev": "4b32a03ddfc6b2d36a9e57c309f96aac24e97af7"
+		},
+		{
+			"ImportPath": "github.com/segmentio/go-log",
+			"Comment": "v1.6.2",
+			"Rev": "070eb8dbbd190928b190d5350a835f171b94a7f6"
+		}
+	]
+}
