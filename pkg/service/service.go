@@ -29,9 +29,6 @@ func New(o *Options) *Service {
 	}
 }
 
-func (s *Service) HomeHandler(res http.ResponseWriter, req *http.Request) {
-}
-
 func (s *Service) IndexHandler(res http.ResponseWriter, req *http.Request) {
 	p := params(res, req)
 
@@ -196,7 +193,6 @@ func params(res http.ResponseWriter, req *http.Request) map[string]string {
 
 func (s *Service) Init() {
 	s.Use(logger.New())
-	s.Get("/", http.HandlerFunc(s.HomeHandler))
 	s.Get("/types/:type/packages", http.HandlerFunc(s.IndexHandler))
 	s.Get("/types/:type/packages/search", http.HandlerFunc(s.SearchHandler))
 	s.Get("/types/:type/packages/:name", http.HandlerFunc(s.ShowHandler))
