@@ -83,7 +83,7 @@ func (s *Service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 	a = append(a, map[string]interface{}{
 		"match": map[string]string{
-			"name": p["type"],
+			"type": p["type"],
 		},
 	})
 
@@ -190,6 +190,7 @@ func params(res http.ResponseWriter, req *http.Request) map[string]string {
 	return map[string]string{
 		"type": req.URL.Query().Get(":type"),
 		"name": name,
+		"url":  req.URL.Query().Get("url"),
 	}
 }
 
