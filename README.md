@@ -1,25 +1,45 @@
-# setup
+# the registry api
 
+```
 $ brew install elasticsearch
+```
 
-## setup index
+## setup the registry index
 
-PUTS /registry
-
-POST /registry/_close
-
-PUT /register/_settings
-{
+```
+curl -XPOST localhost:9200/registry -d '{
    "settings": {
-       "analysis" : {
-            "analyzer" : {
-                "default" : {
-                    "tokenizer" : "whitespace",
-                    "filter" : ["lowercase"]
-                }
+      "analysis": {
+         "analyzer": {
+            "package_name": {
+               "tokenizer": "whitespace",
+               "filter": [
+                  "lowercase",
+                  "word_delimiter"
+               ]
             }
-        }
+         }
+      }
+   },
+   "mappings": {
+      "packages": {
+         "properties": {
+            "name": {
+               "type": "multi_field",
+               "fields": {
+                  "name": {
+                     "type": "string",
+                     "index": "analyzed",
+                     "analyzer": "package_name"
+                  },
+                  "untouched": {
+                     "type": "string",
+                     "index": "not_analyzed"
+                  }
+               }
+            }
+         }
+      }
    }
-}
-
-POST /registry/_open
+}'
+```
