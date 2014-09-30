@@ -1,10 +1,12 @@
 # the registry api
 
+## developing
+
+### db setup
+
 ```
 $ brew install elasticsearch
 ```
-
-## setup the registry index
 
 ```
 curl -XPOST localhost:9200/registry -d '{
@@ -42,4 +44,17 @@ curl -XPOST localhost:9200/registry -d '{
       }
    }
 }'
+```
+
+### go
+
+```
+$ go get github.com/tools/godep
+$ godep restore
+```
+
+## run locally
+
+```
+$ go run main.go
 ```
