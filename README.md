@@ -1,8 +1,6 @@
 # the registry api
 
-## developing
-
-### db setup
+## developing setup
 
 ```
 $ brew install elasticsearch
@@ -45,8 +43,6 @@ curl -XPOST localhost:9200/registry -d '{
    }
 }'
 ```
-
-### go
 
 ```
 $ go get github.com/tools/godep

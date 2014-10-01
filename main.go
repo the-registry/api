@@ -3,6 +3,7 @@ package main
 import "github.com/the-registry/api/pkg/service"
 import "github.com/segmentio/go-log"
 import elastigo "github.com/mattbaird/elastigo/lib"
+import "fmt"
 
 var Version = "0.0.1"
 
@@ -13,6 +14,11 @@ func main() {
 
 	s := service.New(o)
 	s.Init()
-	err := s.Listen("localhost:3000")
+
+	u := "localhost:3000"
+
+	fmt.Printf("Running server at %s\n", u)
+
+	err := s.Listen(u)
 	log.Check(err)
 }
