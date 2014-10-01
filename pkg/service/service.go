@@ -6,7 +6,6 @@ import "github.com/gohttp/logger"
 import elastigo "github.com/mattbaird/elastigo/lib"
 import "net/http"
 import u "github.com/the-registry/api/pkg/utils"
-import "log"
 
 type Package struct {
 	Url  string `json:"url"`
