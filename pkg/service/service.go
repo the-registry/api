@@ -6,6 +6,7 @@ import "github.com/gohttp/logger"
 import elastigo "github.com/mattbaird/elastigo/lib"
 import "net/http"
 import u "github.com/the-registry/api/pkg/utils"
+import "log"
 
 type Package struct {
 	Url  string `json:"url"`
@@ -139,7 +140,6 @@ func (s *Service) ShowHandler(res http.ResponseWriter, req *http.Request) {
 
 	if len(result.Hits.Hits) > 0 {
 		response.JSON(res, result.Hits.Hits[0].Source)
-		return
 	} else {
 		res.WriteHeader(http.StatusNotFound)
 	}
@@ -191,7 +191,7 @@ func (s *Service) search(name string, t string) (elastigo.SearchResult, error) {
 					},
 					map[string]interface{}{
 						"match": map[string]string{
-							"name": t,
+							"type": t,
 						},
 					},
 				},
