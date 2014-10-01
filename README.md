@@ -58,9 +58,9 @@ $ go run main.go
 ## api endpoints
 
 ```
-POST /types/:type/packages
-GET /types/:type/packages
-GET /types/:type/packages/:name
+POST   /types/:type/packages
+GET    /types/:type/packages
+GET    /types/:type/packages/:name
 DELETE /types/:type/packages/:name
-GET /types/:type/packages/search
+GET    /types/:type/packages/search
 ```
