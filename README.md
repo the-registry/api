@@ -1,13 +1,30 @@
-# the registry api
+# The Registry web service.
 
-## developing setup
+## API
+
+### GET
+
+- __GET__ /types/:type/packages - all packages of a type
+- __GET__ /types/:type/packages/:name - info of the package
+- __GET__ /types/:type/packages/search - search for packages
+
+### POST
+
+- __POST__ /types/:type/packages - create a package
+
+### DELETE
+
+- __DELETE__ /types/:type/packages/:name - delete the package
+
+## Developing The Registry
 
 ```
+$ mkdir -p ~/dev/the-registry
+$ cd ~/dev/the-registry
+$ git clone https://github.com/the-registry/api.git
+$ cd api
 $ brew install elasticsearch
-```
-
-```
-curl -XPOST localhost:9200/registry -d '{
+$ curl -XPOST localhost:9200/registry -d '{
    "settings": {
       "analysis": {
          "analyzer": {
@@ -42,25 +59,7 @@ curl -XPOST localhost:9200/registry -d '{
       }
    }
 }'
-```
-
-```
 $ go get github.com/tools/godep
 $ godep restore
-```
-
-## run locally
-
-```
 $ go run main.go
-```
-
-## api endpoints
-
-```
-POST   /types/:type/packages
-GET    /types/:type/packages
-GET    /types/:type/packages/:name
-DELETE /types/:type/packages/:name
-GET    /types/:type/packages/search
 ```
