@@ -1,4 +1,6 @@
-# The Registry web service.
+# the-registry/api
+
+The Registry web service.
 
 ## API
 
